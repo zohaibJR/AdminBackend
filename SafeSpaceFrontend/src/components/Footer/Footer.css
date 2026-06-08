@@ -1,0 +1,271 @@
+/* ───────── FOOTER ───────── */
+.site-footer {
+  width: 100%;
+  padding: clamp(48px, 7vw, 80px)
+           clamp(20px, 6vw, 88px)
+           clamp(32px, 4vw, 48px);
+
+  background: linear-gradient(160deg, #003f5c 0%, #005f84 100%);
+  color: #ffffff;
+
+  scroll-margin-top: 88px;
+}
+
+/* ───────── CONTAINER ───────── */
+.footer-container {
+  max-width: 1100px;
+  margin: 0 auto;
+
+  display: grid;
+  grid-template-columns: 1fr 1.2fr 1fr;
+  gap: 48px;
+
+  padding-bottom: 40px;
+  border-bottom: 1px solid rgba(255,255,255,0.12);
+}
+
+/* ───────── LEFT ───────── */
+.footer-column {
+  display: flex;
+  flex-direction: column;
+}
+
+.footer-left {
+  gap: 22px;
+}
+
+.footer-brand-name {
+  font-family: var(--font-display);
+  font-size: 1.8rem;
+  font-weight: 400;
+  letter-spacing: -0.02em;
+}
+
+.footer-tagline-small {
+  font-size: 0.9rem;
+  color: rgba(255,255,255,0.65);
+  max-width: 260px;
+  line-height: 1.6;
+}
+
+.footer-email {
+  color: rgba(255,255,255,0.85);
+  text-decoration: none;
+  font-size: 0.95rem;
+}
+
+.footer-email:hover {
+  color: #fff;
+}
+
+/* ───────── SOCIAL BUTTONS ───────── */
+.social-buttons {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+/* Base button */
+.social-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+
+  padding: 12px 18px;
+  border-radius: 999px;
+
+  text-decoration: none;
+  font-size: 0.92rem;
+  font-weight: 600;
+
+  transition: all 0.25s ease;
+
+  backdrop-filter: blur(10px);
+
+  border: 1px solid transparent;
+}
+
+/* TEXT */
+.social-text {
+  line-height: 1;
+}
+
+/* ───────── WHATSAPP ───────── */
+.social-btn--whatsapp {
+  background: rgba(37, 211, 102, 0.14);
+  color: #25d366;
+  border-color: rgba(37, 211, 102, 0.25);
+}
+
+.social-btn--whatsapp:hover {
+  background: #25d366;
+  color: #fff;
+  transform: translateY(-3px);
+  box-shadow: 0 10px 24px rgba(37, 211, 102, 0.32);
+}
+
+/* WhatsApp logo */
+.whatsapp-logo {
+  width: 18px;
+  height: 18px;
+  object-fit: contain;
+  transition: 0.25s ease;
+}
+
+.social-btn--whatsapp:hover .whatsapp-logo {
+  transform: scale(1.15) rotate(8deg);
+}
+
+/* ───────── LINKEDIN ───────── */
+.social-btn--linkedin {
+  background: rgba(10, 102, 194, 0.14);
+  color: #fff;
+  border-color: rgba(255,255,255,0.12);
+}
+
+.social-btn--linkedin:hover {
+  background: #0a66c2;
+  color: #fff;
+  transform: translateY(-3px);
+  box-shadow: 0 10px 24px rgba(10, 102, 194, 0.35);
+}
+
+/* LinkedIn logo */
+.linkedin-logo {
+  width: 18px;
+  height: 18px;
+  object-fit: contain;
+  transition: 0.25s ease;
+}
+
+.social-btn--linkedin:hover .linkedin-logo {
+  transform: scale(1.15) rotate(-6deg);
+}
+
+/* ───────── CENTER ───────── */
+.footer-center {
+  align-items: center;
+  text-align: center;
+  gap: 24px;
+}
+
+.platform-tagline {
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  font-style: italic;
+  color: rgba(255,255,255,0.9);
+  line-height: 1.6;
+}
+
+.footer-cta-group {
+  width: 100%;
+  max-width: 260px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* Buttons */
+.footer-btn {
+  padding: 13px 20px;
+  border-radius: 999px;
+  font-size: 0.92rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+/* outline */
+.btn-outline-light {
+  background: transparent;
+  border: 1.5px solid rgba(255,255,255,0.55);
+  color: #fff;
+}
+
+.btn-outline-light:hover {
+  background: rgba(255,255,255,0.12);
+  transform: translateY(-2px);
+}
+
+/* solid */
+.btn-solid-light {
+  background: #fff;
+  color: #015b7f;
+  border: 1.5px solid #fff;
+}
+
+.btn-solid-light:hover {
+  background: #e7f3f8;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.16);
+}
+
+/* ───────── RIGHT ───────── */
+.footer-right {
+  align-items: flex-end;
+  gap: 18px;
+}
+
+.footer-links-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: rgba(255,255,255,0.45);
+}
+
+.footer-link {
+  color: rgba(255,255,255,0.75);
+  text-decoration: none;
+  font-size: 0.95rem;
+}
+
+.footer-link:hover {
+  color: #fff;
+}
+
+/* ───────── BOTTOM ───────── */
+.footer-bottom {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding-top: 24px;
+  display: flex;
+  justify-content: center;
+}
+
+.footer-copy {
+  font-size: 0.82rem;
+  color: rgba(255,255,255,0.45);
+}
+
+/* ───────── RESPONSIVE ───────── */
+@media (max-width: 860px) {
+  .footer-container {
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+  }
+
+  .footer-right {
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 580px) {
+  .footer-container {
+    grid-template-columns: 1fr;
+  }
+
+  .footer-center,
+  .footer-right {
+    align-items: flex-start;
+    text-align: left;
+  }
+
+  .social-btn {
+    flex: 1;
+    justify-content: center;
+  }
+
+  .footer-bottom {
+    justify-content: flex-start;
+  }
+}

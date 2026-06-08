@@ -1,0 +1,100 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&display=swap');
+
+/* ───────── LOCAL FONT ───────── */
+@font-face {
+  font-family: 'Blueberry';
+  src: url('../Fonts/blueberry_4/Blueberry Personal Use Only.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+/* ───────── HEALING BANNER ───────── */
+.healing-banner {
+  width: 100%;
+  padding: clamp(64px, 10vw, 112px) clamp(20px, 6vw, 88px);
+  background:
+    radial-gradient(ellipse 70% 80% at 20% 50%, rgba(0, 180, 216, 0.12) 0%, transparent 55%),
+    radial-gradient(ellipse 60% 70% at 80% 50%, rgba(0, 95, 132, 0.14) 0%, transparent 55%),
+    var(--color-page);
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+
+  position: relative;
+}
+
+/* Decorative dots pattern */
+.healing-banner::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(circle, rgba(0, 95, 132, 0.08) 1px, transparent 1px);
+  background-size: 28px 28px;
+  pointer-events: none;
+}
+
+/* ───────── TITLE ───────── */
+.healing-title {
+  font-family: 'Blueberry', 'DM Serif Display', serif;
+  font-size: clamp(2.4rem, 6vw, 4rem);
+  font-weight: 400;
+  line-height: 1.2;
+  letter-spacing: -0.03em;
+  margin-bottom: 12px;
+  position: relative;
+}
+
+/* split colors */
+.title-part-1 {
+  color: #1871a1;
+}
+
+.title-part-2 {
+  color: #2a8db4;
+}
+
+.healing-title em {
+  color: var(--color-primary);
+  font-style: italic;
+}
+
+/* ───────── SUBTITLE ───────── */
+.healing-sub {
+  color: var(--color-muted);
+  font-size: 1.05rem;
+  font-weight: 300;
+  margin-bottom: 48px;
+  max-width: 380px;
+  line-height: 1.65;
+  position: relative;
+}
+
+/* ───────── BUTTONS ───────── */
+.button-group {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  position: relative;
+}
+
+/* ───────── RESPONSIVE ───────── */
+@media (max-width: 600px) {
+  .button-group {
+    flex-direction: column;
+    width: 100%;
+    max-width: 340px;
+  }
+
+  .button-group .cta-btn {
+    width: 100%;
+  }
+
+  .healing-title {
+    font-size: 2.2rem;
+  }
+}

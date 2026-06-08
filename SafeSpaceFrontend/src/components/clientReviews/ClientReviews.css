@@ -1,0 +1,109 @@
+/* ───────── CLIENT REVIEWS ───────── */
+
+.reviews-section {
+  width: 100%;
+  padding: clamp(64px, 9vw, 104px) 20px;
+  background:
+    radial-gradient(
+      ellipse 80% 60% at 50% 50%,
+      rgba(0, 183, 255, 0.04) 0%,
+      transparent 70%
+    ),
+    var(--color-page);
+}
+
+.reviews-section .section-heading {
+  margin-bottom: 8px;
+  text-align: center;
+}
+
+.reviews__sub {
+  text-align: center;
+  color: var(--color-muted);
+  font-size: 1rem;
+  font-weight: 300;
+  margin-bottom: 48px;
+}
+
+/* Container */
+
+.reviews-container {
+  justify-content: center;
+  align-items: center;
+  display: flex;
+  gap: 24px;
+  overflow-x: auto;
+  padding-bottom: 10px;
+  scroll-behavior: smooth;
+}
+
+/* Optional scrollbar styling */
+
+.reviews-container::-webkit-scrollbar {
+  height: 6px;
+}
+
+.reviews-container::-webkit-scrollbar-thumb {
+  background: rgba(0, 95, 132, 0.3);
+  border-radius: 10px;
+}
+
+/* Card */
+
+.review-card {
+  flex: 0 0 400px;
+  min-height: 260px;
+  background: var(--color-surface);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  padding: 32px 28px 28px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+  transition: 0.25s ease;
+}
+
+.review-card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-4px);
+}
+
+.quote-icon {
+  font-size: 3rem;
+  color: #1871a1;
+  position: absolute;
+  top: 16px;
+  left: 22px;
+  line-height: 1;
+}
+
+.review-text {
+  font-size: 0.92rem;
+  color: var(--color-muted);
+  line-height: 1.75;
+  margin-top: 24px;
+  margin-bottom: 20px;
+  text-align: left;
+}
+
+.stars-container {
+  display: flex;
+  justify-content: center;
+  gap: 4px;
+}
+
+.star {
+  color: #1871a1;
+  font-size: 1.75rem;
+}
+
+/* Mobile */
+
+@media (max-width: 600px) {
+  .review-card {
+    flex: 0 0 300px;
+    min-height: 300px;
+  }
+}

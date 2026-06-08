@@ -1,0 +1,183 @@
+/* ───────── MEET THERAPIST ───────── */
+.therapist-section {
+  width: 100%;
+  padding: clamp(64px, 9vw, 104px) clamp(20px, 6vw, 88px);
+  background: var(--color-surface);
+  scroll-margin-top: 88px;
+}
+
+.therapist-section .section-heading {
+  margin-bottom: 56px;
+}
+
+.therapist-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(40px, 8vw, 100px);
+  max-width: 1040px;
+  margin: 0 auto;
+}
+
+/* Image */
+.therapist-image-wrapper {
+  flex-shrink: 0;
+  position: relative;
+}
+
+.therapist-image-wrapper::before {
+  content: '';
+  position: absolute;
+  inset: -10px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-accent) 100%);
+  opacity: 0.2;
+  z-index: 0;
+}
+
+.therapist-img-circle {
+  position: relative;
+  z-index: 1;
+  width: clamp(220px, 26vw, 300px);
+  height: clamp(220px, 26vw, 300px);
+  border-radius: 50%;
+  overflow: hidden;
+  border: 4px solid var(--color-surface);
+  box-shadow: var(--shadow-md);
+}
+
+.therapist-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Badge */
+.therapist-badge {
+  position: absolute;
+  bottom: 12px;
+  right: -8px;
+  z-index: 2;
+  background: var(--color-primary);
+  color: #fff;
+  padding: 8px 16px;
+  border-radius: var(--radius-full);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  box-shadow: var(--shadow-sm);
+  white-space: nowrap;
+}
+
+/* Text */
+.therapist-info {
+  flex: 1 1 420px;
+  max-width: 500px;
+}
+
+.intro-text {
+  font-family: var(--font-sans);
+  font-size: 1.05rem;
+  color: var(--color-muted);
+  margin-bottom: 8px;
+  font-weight: 300;
+}
+
+.therapist-name-heading {
+  font-family: var(--font-display);
+  font-size: clamp(1.9rem, 3.5vw, 2.6rem);
+  color: var(--color-primary);
+  font-weight: 400;
+  margin-bottom: 6px;
+  letter-spacing: -0.02em;
+}
+
+.therapist-credentials {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 24px;
+}
+
+.credential-tag {
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
+  border: 1.5px solid var(--color-border-strong);
+  border-radius: var(--radius-full);
+  padding: 5px 14px;
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.belief-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-muted);
+  margin-bottom: 12px;
+}
+
+.quote-text {
+  font-family: var(--font-display);
+  font-size: clamp(1rem, 1.8vw, 1.2rem);
+  font-style: italic;
+  color: var(--color-text);
+  line-height: 1.65;
+  margin: 0 0 30px;
+  padding-left: 18px;
+  border-left: 3px solid var(--color-accent);
+}
+
+.more-btn {
+  background: transparent;
+  background-color: rgb(0, 95, 132);;
+  color: var(--color-primary);
+  border: 2px solid var(--color-primary);
+  border-radius: var(--radius-full);
+  padding: 12px 28px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  font-family: var(--font-sans);
+  color: #ffffff;
+}
+
+.more-btn:hover {
+  background: var(--color-primary);
+  color: #fff;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 95, 132, 0.3);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .therapist-container {
+    flex-direction: column;
+    text-align: center;
+    gap: 36px;
+  }
+
+  .therapist-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .quote-text {
+    padding-left: 0;
+    border-left: none;
+    border-top: 3px solid var(--color-accent);
+    padding-top: 16px;
+    text-align: left;
+  }
+
+  .therapist-credentials {
+    justify-content: center;
+  }
+
+  .therapist-badge {
+    right: 0;
+  }
+}
