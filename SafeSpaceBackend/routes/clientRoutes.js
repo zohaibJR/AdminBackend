@@ -2,7 +2,7 @@ import express from "express";
 
 import {
   createClient,
-  getClients,
+  getAllClients,
   getClientById,
   updateClient,
   deleteClient,
@@ -10,11 +10,13 @@ import {
 
 const router = express.Router();
 
-router.route("/")
+router
+  .route("/")
   .post(createClient)
-  .get(getClients);
+  .get(getAllClients);
 
-router.route("/:id")
+router
+  .route("/:id")
   .get(getClientById)
   .put(updateClient)
   .delete(deleteClient);

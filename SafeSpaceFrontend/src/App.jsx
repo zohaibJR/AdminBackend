@@ -11,6 +11,8 @@ import HealingBanner from "./components/HealingBanner/HealingBanner";
 import Footer from "./components/Footer/Footer";
 
 import AddClient from "./pages/AddClient";
+import DisplayClients from "./pages/DisplayClients";
+import EditClient from "./pages/EditClient";
 
 import "./App.css";
 
@@ -38,6 +40,8 @@ function App() {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/addclient" element={<AddClient />} />
+        <Route path="/clients" element={<DisplayClients />} />
+        <Route path="/editclient/:id" element={<EditClient />} />
       </Routes>
     </BrowserRouter>
   );

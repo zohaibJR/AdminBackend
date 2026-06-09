@@ -1,18 +1,34 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { useNavigate, useParams } from "react-router-dom";
 
-function AddClient() {
+function EditClient() {
+  const { id } = useParams();
+  const navigate = useNavigate();
+
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [note, setNote] = useState("");
 
+  useEffect(() => {
+    axios
+      .get(`http://localhost:5000/api/clients/${id}`)
+      .then((res) => {
+        setName(res.data.name);
+        setEmail(res.data.email);
+        setPhone(res.data.phone);
+        setNote(res.data.note);
+      })
+      .catch((err) => console.log(err));
+  }, [id]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
-      const response = await axios.post(
-        "http://localhost:5000/api/clients",
+      await axios.put(
+        `http://localhost:5000/api/clients/${id}`,
         {
           name,
           email,
@@ -21,70 +37,62 @@ function AddClient() {
         }
       );
 
-      alert(response.data.message || "Client added successfully");
+      alert("Client updated successfully");
 
-      setName("");
-      setEmail("");
-      setPhone("");
-      setNote("");
+      navigate("/");
     } catch (error) {
-      console.error(error);
-      alert("Error adding client");
+      console.log(error);
+      alert("Update failed");
     }
   };
 
   return (
-    <div className="w-full h-[200px] border-[5px] border-yellow-500 box-border">
-      <h1>Add Client</h1>
+    <div>
+      <h1>Edit Client</h1>
 
       <form onSubmit={handleSubmit}>
-        <label>Enter Name:</label>
         <input
           type="text"
-          placeholder="Enter Name"
+          placeholder="Name"
           value={name}
           onChange={(e) => setName(e.target.value)}
-          required
         />
 
         <br />
 
-        <label>Enter Email:</label>
         <input
           type="email"
-          placeholder="Enter Email"
+          placeholder="Email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          required
         />
 
         <br />
 
-        <label>Enter Phone Number:</label>
         <input
           type="text"
-          placeholder="Enter Phone Number"
+          placeholder="Phone"
           value={phone}
           onChange={(e) => setPhone(e.target.value)}
-          required
         />
 
         <br />
 
-        <label>Enter Note:</label>
         <input
           type="text"
-          placeholder="Enter Note"
+          placeholder="Note"
           value={note}
           onChange={(e) => setNote(e.target.value)}
         />
 
         <br />
 
-        <button type="submit">Submit</button>
+        <button type="submit">
+          Update Client
+        </button>
       </form>
     </div>
   );
 }
 
-export default AddClient;
+export default EditClient;
