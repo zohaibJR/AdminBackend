@@ -4,25 +4,27 @@ const clientSchema = new mongoose.Schema(
   {
     name: {
       type: String,
-      required: true,
+      required: [true, "Client name is required"],
       trim: true,
     },
 
     phone: {
       type: String,
-      required: true,
+      required: [true, "Phone number is required"],
       trim: true,
     },
 
     email: {
       type: String,
-      required: true,
+      required: [true, "Email is required"],
       trim: true,
+      lowercase: true,
     },
 
     note: {
       type: String,
       trim: true,
+      default: "",
     },
   },
   {

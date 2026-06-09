@@ -13,20 +13,19 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Home Route
+// Health Check
 app.get("/", (req, res) => {
   res.status(200).json({
     success: true,
-    message: "API is running successfully",
+    message: "API is running",
   });
 });
 
-// Client Routes
+// Routes
 app.use("/api/clients", clientRoutes);
 
 const PORT = process.env.PORT || 5000;
 
-// Start Server
 const startServer = async () => {
   try {
     await connectDB();
