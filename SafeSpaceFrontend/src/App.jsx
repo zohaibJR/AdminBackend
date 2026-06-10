@@ -10,10 +10,13 @@ import BeforeStep from "./components/BeforeSteps/BeforeStep";
 import HealingBanner from "./components/HealingBanner/HealingBanner";
 import Footer from "./components/Footer/Footer";
 
+// pages
 import AddClient from "./pages/AddClient";
 import DisplayClients from "./pages/DisplayClients";
 import EditClient from "./pages/EditClient";
-
+import DisplayTherapists from "./pages/DisplayTherapists";
+import AddTherapists from "./pages/AddTherapists";
+import EditTherapist from "./pages/EditTherapist";
 import "./App.css";
 
 function HomePage() {
@@ -42,6 +45,11 @@ function App() {
         <Route path="/addclient" element={<AddClient />} />
         <Route path="/clients" element={<DisplayClients />} />
         <Route path="/editclient/:id" element={<EditClient />} />
+
+        <Route path="/therapists" element={<DisplayTherapists />} />
+        <Route path="/addtherapist" element={<AddTherapists />} />
+        <Route path="/edittherapist/:id" element={<EditTherapist />} />
+        
       </Routes>
     </BrowserRouter>
   );
