@@ -5,6 +5,7 @@ import dotenv from "dotenv";
 import connectDB from "./config/db.js";
 import clientRoutes from "./routes/clientRoutes.js";
 import therapistRoutes from "./routes/therapistRoutes.js"
+import sessionRoutes from "./routes/sessionRoutes.js";
 
 dotenv.config();
 
@@ -25,6 +26,7 @@ app.get("/", (req, res) => {
 // Routes
 app.use("/api/clients", clientRoutes);
 app.use("/api/therapists", therapistRoutes);
+app.use("/api/sessions", sessionRoutes);
 
 const PORT = process.env.PORT || 5000;
 

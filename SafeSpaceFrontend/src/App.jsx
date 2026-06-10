@@ -17,6 +17,12 @@ import EditClient from "./pages/EditClient";
 import DisplayTherapists from "./pages/DisplayTherapists";
 import AddTherapists from "./pages/AddTherapists";
 import EditTherapist from "./pages/EditTherapist";
+
+import AddSession from "./pages/AddSession";
+import DisplaySessions from "./pages/DisplaySessions";
+import EditSession from "./pages/EditSession";
+
+
 import "./App.css";
 
 function HomePage() {
@@ -49,6 +55,14 @@ function App() {
         <Route path="/therapists" element={<DisplayTherapists />} />
         <Route path="/addtherapist" element={<AddTherapists />} />
         <Route path="/edittherapist/:id" element={<EditTherapist />} />
+
+        <Route path="/sessions" element={<DisplaySessions />} />
+         <Route path="/addsession" element={<AddSession />} />
+
+         <Route
+  path="/editsession/:id"
+  element={<EditSession />}
+/>
         
       </Routes>
     </BrowserRouter>
