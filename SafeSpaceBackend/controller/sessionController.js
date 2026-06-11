@@ -48,10 +48,7 @@ export const createSession = async (req, res) => {
       data: session,
     });
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: error.message,
-    });
+    res.status(500).json({ success: false, message: error.message });
   }
 };
 
@@ -64,10 +61,7 @@ export const getAllSessions = async (req, res) => {
 
     res.status(200).json(sessions);
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: error.message,
-    });
+    res.status(500).json({ success: false, message: error.message });
   }
 };
 
@@ -78,18 +72,12 @@ export const getSessionById = async (req, res) => {
       .populate("therapistId", "name");
 
     if (!session) {
-      return res.status(404).json({
-        success: false,
-        message: "Session not found",
-      });
+      return res.status(404).json({ success: false, message: "Session not found" });
     }
 
     res.status(200).json(session);
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: error.message,
-    });
+    res.status(500).json({ success: false, message: error.message });
   }
 };
 
@@ -98,29 +86,17 @@ export const updateSession = async (req, res) => {
     const currentSession = await Session.findById(req.params.id);
 
     if (!currentSession) {
-      return res.status(404).json({
-        success: false,
-        message: "Session not found",
-      });
+      return res.status(404).json({ success: false, message: "Session not found" });
     }
 
-    const nextSession = {
-      ...currentSession.toObject(),
-      ...req.body,
-    };
+    const nextSession = { ...currentSession.toObject(), ...req.body };
 
     const updatePayload = {
       ...req.body,
       ...getSessionPaymentFields(nextSession),
     };
 
-    await Session.findByIdAndUpdate(
-      req.params.id,
-      updatePayload,
-      {
-        new: true,
-      }
-    );
+    await Session.findByIdAndUpdate(req.params.id, updatePayload, { new: true });
 
     const session = await Session.findById(req.params.id)
       .populate("clientId", "name")
@@ -132,25 +108,21 @@ export const updateSession = async (req, res) => {
       data: session,
     });
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: error.message,
-    });
+    res.status(500).json({ success: false, message: error.message });
   }
 };
 
 export const deleteSession = async (req, res) => {
   try {
-    await Session.findByIdAndDelete(req.params.id);
+    // FIX: Check if session exists before deleting
+    const session = await Session.findByIdAndDelete(req.params.id);
 
-    res.status(200).json({
-      success: true,
-      message: "Session deleted successfully",
-    });
+    if (!session) {
+      return res.status(404).json({ success: false, message: "Session not found" });
+    }
+
+    res.status(200).json({ success: true, message: "Session deleted successfully" });
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: error.message,
-    });
+    res.status(500).json({ success: false, message: error.message });
   }
 };

@@ -1,77 +1,100 @@
-import axios from 'axios';
-import React, { useEffect, useState } from 'react'
-import { useParams, useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import { useNavigate, useParams } from "react-router-dom";
+import AdminLayout from "../components/AdminLayout";
 
-function EditTherapist() {
-    const { id } = useParams();
+const API = "http://localhost:5000/api";
 
-    const navigate = useNavigate();
+export default function EditTherapist() {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const [form, setForm] = useState({ name: "", specialization: "", phone: "", email: "" });
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
 
-    const [name, setName] = useState("");
-    const [specialization, setSpecialization] = useState("");
-    const [phone, setPhone] = useState("");
-    const [email, setEmail] = useState("");
+  const set = (k) => (e) => setForm((f) => ({ ...f, [k]: e.target.value }));
 
-    useEffect(()=>{
-        axios.get(`http://localhost:5000/api/therapists/${id}`)
-        .then((res)=>{
-            setName(res.data.name);
-            setSpecialization(res.data.specialization);
-            setPhone(res.data.phone);
-            setEmail(res.data.email);
-        })
-        .catch((error)=>console.log(error));
-    }, [id]);
+  useEffect(() => {
+    axios.get(`${API}/therapists/${id}`)
+      .then((res) => {
+        const { name, specialization, phone, email } = res.data;
+        setForm({ name, specialization, phone, email });
+        setLoading(false);
+      })
+      .catch(() => { setError("Could not load therapist."); setLoading(false); });
+  }, [id]);
 
-    const handleSubmit = async(e)=>{
-        e.preventDefault();
-
-        try
-        {
-            await axios.put(`http://localhost:5000/api/therapists/${id}`,
-                {
-                    name,
-                    specialization,
-                    phone,
-                    email,
-                }
-            );
-
-            alert("Therapist updated successfully");
-
-            navigate("/therapists");
-
-        }
-        catch (error) {
-      console.log(error);
-      alert("Update failed");
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError("");
+    setSaving(true);
+    try {
+      await axios.put(`${API}/therapists/${id}`, form);
+      navigate("/therapists");
+    } catch (err) {
+      setError(err.response?.data?.message || "Update failed.");
+      setSaving(false);
     }
-    };
-
+  };
 
   return (
-    <div>
-      <h1>Edit Therapist</h1>
+    <AdminLayout title="Edit Therapist">
+      <div className="page-header">
+        <div className="page-header__text">
+          <h2 className="page-header__title">Edit Therapist</h2>
+          <p className="page-header__sub">Update therapist details below.</p>
+        </div>
+        <button className="btn btn--ghost" onClick={() => navigate("/therapists")}>
+          ← Back to Therapists
+        </button>
+      </div>
 
-      <form onSubmit={handleSubmit}>
-        <label htmlFor="">Name :- </label>
-        <input type="text" placeholder='Enter your Name' value={name} onChange={(e)=>setName(e.target.value)}/>
-        <br />
-        <label htmlFor="">Specialization :- </label>
-        <input type="text" placeholder='Enter your Specialization' value={specialization} onChange={(e)=>setSpecialization(e.target.value)}/>
-        <br />
-        <label htmlFor="">Phone :- </label>
-        <input type="text" placeholder='Enter your phone' value={phone} onChange={(e)=>setPhone(e.target.value)}/>
-        <br />
-        <label htmlFor="">Email :- </label>
-        <input type="text" placeholder='Enter your email' value={email} onChange={(e)=>setEmail(e.target.value)}/>
-        <br />
-        <button type="submit">
-          Update Therapist
-        </button>        
-      </form>
-    </div>
-  )
+      <div className="card" style={{ maxWidth: 620 }}>
+        <div className="card__header">
+          <span className="card__title">Therapist Information</span>
+        </div>
+        <div className="card__body">
+          {error && <div className="alert alert--error">⚠️ {error}</div>}
+
+          {loading ? (
+            <div style={{ padding: 32, textAlign: "center", color: "var(--text-muted)" }}>Loading…</div>
+          ) : (
+            <form onSubmit={handleSubmit}>
+              <div className="form-grid" style={{ marginBottom: 20 }}>
+                <div className="form-group">
+                  <label className="form-label">Full Name *</label>
+                  <input className="form-input" type="text" value={form.name} onChange={set("name")} required />
+                </div>
+
+                <div className="form-group">
+                  <label className="form-label">Specialization *</label>
+                  <input className="form-input" type="text" value={form.specialization} onChange={set("specialization")} required />
+                </div>
+
+                <div className="form-group">
+                  <label className="form-label">Phone Number *</label>
+                  <input className="form-input" type="text" value={form.phone} onChange={set("phone")} required />
+                </div>
+
+                <div className="form-group">
+                  <label className="form-label">Email Address *</label>
+                  <input className="form-input" type="email" value={form.email} onChange={set("email")} required />
+                </div>
+              </div>
+
+              <div className="btn-row">
+                <button className="btn btn--primary btn--lg" type="submit" disabled={saving}>
+                  {saving ? "Saving…" : "✓ Update Therapist"}
+                </button>
+                <button className="btn btn--ghost" type="button" onClick={() => navigate("/therapists")}>
+                  Cancel
+                </button>
+              </div>
+            </form>
+          )}
+        </div>
+      </div>
+    </AdminLayout>
+  );
 }
-
-export default EditTherapist

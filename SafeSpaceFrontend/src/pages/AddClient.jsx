@@ -1,90 +1,114 @@
 import React, { useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import AdminLayout from "../components/AdminLayout";
 
-function AddClient() {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
-  const [note, setNote] = useState("");
+const API = "http://localhost:5000/api";
+
+export default function AddClient() {
+  const navigate = useNavigate();
+  const [form, setForm] = useState({ name: "", email: "", phone: "", note: "" });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  const set = (k) => (e) => setForm((f) => ({ ...f, [k]: e.target.value }));
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+    setError("");
+    setLoading(true);
     try {
-      const response = await axios.post(
-        "http://localhost:5000/api/clients",
-        {
-          name,
-          email,
-          phone,
-          note,
-        }
-      );
-
-      alert(response.data.message || "Client added successfully");
-
-      setName("");
-      setEmail("");
-      setPhone("");
-      setNote("");
-    } catch (error) {
-      console.error(error);
-      alert("Error adding client");
+      await axios.post(`${API}/clients`, form);
+      navigate("/clients");
+    } catch (err) {
+      setError(err.response?.data?.message || "Failed to add client.");
+      setLoading(false);
     }
   };
 
   return (
-    <div className="w-full h-[200px] border-[5px] border-yellow-500 box-border">
-      <h1>Add Client</h1>
+    <AdminLayout title="Add Client">
+      <div className="page-header">
+        <div className="page-header__text">
+          <h2 className="page-header__title">Add New Client</h2>
+          <p className="page-header__sub">Register a new client to SafeSpace.</p>
+        </div>
+        <button className="btn btn--ghost" onClick={() => navigate("/clients")}>
+          ← Back to Clients
+        </button>
+      </div>
 
-      <form onSubmit={handleSubmit}>
-        <label>Enter Name:</label>
-        <input
-          type="text"
-          placeholder="Enter Name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          required
-        />
+      <div className="card" style={{ maxWidth: 620 }}>
+        <div className="card__header">
+          <span className="card__title">Client Information</span>
+        </div>
+        <div className="card__body">
+          {error && <div className="alert alert--error">⚠️ {error}</div>}
 
-        <br />
+          <form onSubmit={handleSubmit}>
+            <div className="form-grid" style={{ marginBottom: 20 }}>
+              <div className="form-group">
+                <label className="form-label">Full Name *</label>
+                <input
+                  className="form-input"
+                  type="text"
+                  placeholder="e.g. Sarah Ahmed"
+                  value={form.name}
+                  onChange={set("name")}
+                  required
+                />
+              </div>
 
-        <label>Enter Email:</label>
-        <input
-          type="email"
-          placeholder="Enter Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
+              <div className="form-group">
+                <label className="form-label">Phone Number *</label>
+                <input
+                  className="form-input"
+                  type="text"
+                  placeholder="e.g. 0300-1234567"
+                  value={form.phone}
+                  onChange={set("phone")}
+                  required
+                />
+              </div>
 
-        <br />
+              <div className="form-group form-group--full">
+                <label className="form-label">Email Address *</label>
+                <input
+                  className="form-input"
+                  type="email"
+                  placeholder="e.g. sarah@example.com"
+                  value={form.email}
+                  onChange={set("email")}
+                  required
+                />
+              </div>
 
-        <label>Enter Phone Number:</label>
-        <input
-          type="text"
-          placeholder="Enter Phone Number"
-          value={phone}
-          onChange={(e) => setPhone(e.target.value)}
-          required
-        />
+              <div className="form-group form-group--full">
+                <label className="form-label">Notes (optional)</label>
+                <textarea
+                  className="form-textarea"
+                  placeholder="Any relevant notes about this client…"
+                  value={form.note}
+                  onChange={set("note")}
+                />
+              </div>
+            </div>
 
-        <br />
-
-        <label>Enter Note:</label>
-        <input
-          type="text"
-          placeholder="Enter Note"
-          value={note}
-          onChange={(e) => setNote(e.target.value)}
-        />
-
-        <br />
-
-        <button type="submit">Submit</button>
-      </form>
-    </div>
+            <div className="btn-row">
+              <button className="btn btn--primary btn--lg" type="submit" disabled={loading}>
+                {loading ? "Saving…" : "✓ Save Client"}
+              </button>
+              <button
+                className="btn btn--ghost"
+                type="button"
+                onClick={() => navigate("/clients")}
+              >
+                Cancel
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </AdminLayout>
   );
 }
-
-export default AddClient;
