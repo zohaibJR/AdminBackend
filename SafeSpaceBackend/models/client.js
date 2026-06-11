@@ -26,6 +26,17 @@ const clientSchema = new mongoose.Schema(
       trim: true,
       default: "",
     },
+
+    // Soft delete fields
+    isDeleted: {
+      type: Boolean,
+      default: false,
+    },
+
+    deletedAt: {
+      type: Date,
+      default: null,
+    },
   },
   {
     timestamps: true,

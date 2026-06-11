@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { NavLink, useLocation } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import "../styles/admin.css";
 
 const NAV = [
@@ -12,9 +12,15 @@ const NAV = [
   {
     section: "Manage",
     links: [
-      { to: "/clients",    icon: "👤", label: "Clients" },
+      { to: "/clients",    icon: "👤", label: "Clients"    },
       { to: "/therapists", icon: "🧠", label: "Therapists" },
-      { to: "/sessions",   icon: "📅", label: "Sessions" },
+      { to: "/sessions",   icon: "📅", label: "Sessions"   },
+    ],
+  },
+  {
+    section: "System",
+    links: [
+      { to: "/audit-logs", icon: "📋", label: "Audit Logs" },
     ],
   },
 ];
@@ -24,13 +30,9 @@ export default function AdminLayout({ children, title }) {
 
   return (
     <div className="admin-shell">
-      {/* Overlay for mobile */}
+      {/* Mobile overlay */}
       {sidebarOpen && (
         <div
-          style={{
-            position: "fixed", inset: 0, background: "rgba(0,0,0,.45)",
-            zIndex: 99, display: "none",
-          }}
           className="sidebar-overlay"
           onClick={() => setSidebarOpen(false)}
         />
@@ -56,9 +58,7 @@ export default function AdminLayout({ children, title }) {
                 <NavLink
                   key={link.to}
                   to={link.to}
-                  className={({ isActive }) =>
-                    `sidebar__link${isActive ? " active" : ""}`
-                  }
+                  className={({ isActive }) => `sidebar__link${isActive ? " active" : ""}`}
                   onClick={() => setSidebarOpen(false)}
                 >
                   <span className="sidebar__link-icon">{link.icon}</span>
@@ -69,18 +69,14 @@ export default function AdminLayout({ children, title }) {
           ))}
         </nav>
 
-        <div className="sidebar__footer">
-          SafeSpace © 2025
-        </div>
+        <div className="sidebar__footer">SafeSpace © 2025</div>
       </aside>
 
       {/* Main */}
       <div className="admin-main">
         <header className="topbar">
           <button
-            className="btn btn--ghost btn--sm"
-            style={{ display: "none" }}
-            id="menu-btn"
+            className="btn btn--ghost btn--sm topbar__menu-btn"
             onClick={() => setSidebarOpen((v) => !v)}
             aria-label="Toggle menu"
           >
