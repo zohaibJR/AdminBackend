@@ -8,6 +8,12 @@ function DisplaySessions() {
   const [sessions, setSessions] = useState([]);
   const navigate = useNavigate();
 
+  const formatMoney = (amount) =>
+    Number(amount || 0).toLocaleString(undefined, {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 2,
+    });
+
   // Fetch all sessions
   useEffect(() => {
     axios
@@ -47,7 +53,7 @@ function DisplaySessions() {
   // Update session status
   const updateStatus = async (id, status) => {
     try {
-      await axios.put(
+      const res = await axios.put(
         `http://localhost:5000/api/sessions/${id}`,
         {
           status,
@@ -57,7 +63,7 @@ function DisplaySessions() {
       setSessions(
         sessions.map((session) =>
           session._id === id
-            ? { ...session, status }
+            ? { ...session, ...res.data.data }
             : session
         )
       );
@@ -66,6 +72,62 @@ function DisplaySessions() {
     } catch (error) {
       console.log(error);
       alert("Failed to update session status");
+    }
+  };
+
+  const updatePaymentReceived = async (id, paymentReceived) => {
+    try {
+      const res = await axios.put(
+        `http://localhost:5000/api/sessions/${id}`,
+        {
+          paymentReceived,
+        }
+      );
+
+      setSessions(
+        sessions.map((session) =>
+          session._id === id
+            ? { ...session, ...res.data.data }
+            : session
+        )
+      );
+
+      alert(
+        paymentReceived
+          ? "Payment marked as received"
+          : "Payment marked as pending"
+      );
+    } catch (error) {
+      console.log(error);
+      alert("Failed to update payment received status");
+    }
+  };
+
+  const updateShareReceived = async (id, didIReceiveMyShare) => {
+    try {
+      const res = await axios.put(
+        `http://localhost:5000/api/sessions/${id}`,
+        {
+          didIReceiveMyShare,
+        }
+      );
+
+      setSessions(
+        sessions.map((session) =>
+          session._id === id
+            ? { ...session, ...res.data.data }
+            : session
+        )
+      );
+
+      alert(
+        didIReceiveMyShare
+          ? "Share marked as received"
+          : "Share marked as not received"
+      );
+    } catch (error) {
+      console.log(error);
+      alert("Failed to update share received status");
     }
   };
 
@@ -116,6 +178,32 @@ function DisplaySessions() {
             </p>
 
             <p>
+              <strong>Stage:</strong>{" "}
+              {session.sessionStage || "Session Pending"}
+            </p>
+
+            <p>
+              <strong>Payment Received:</strong>{" "}
+              {session.paymentReceived ? "Yes" : "No"}{" "}
+              ({session.paymentStatus || "No Payment"})
+            </p>
+
+            <p>
+              <strong>Session Amount:</strong>{" "}
+              {formatMoney(session.sessionPayment)}{" "}
+            </p>
+
+            <p>
+              <strong>My Share 20%:</strong>{" "}
+              {formatMoney(session.myShareAmount)}
+            </p>
+
+            <p>
+              <strong>Did I receive my share:</strong>{" "}
+              {session.didIReceiveMyShare ? "Yes" : "No"}
+            </p>
+
+            <p>
               <strong>Notes:</strong>{" "}
               {session.notes}
             </p>
@@ -134,6 +222,37 @@ function DisplaySessions() {
               }
             >
               Cancel
+            </button>
+
+            <button
+              disabled={session.status !== "Done"}
+              onClick={() =>
+                updatePaymentReceived(
+                  session._id,
+                  !session.paymentReceived
+                )
+              }
+            >
+              {session.paymentReceived
+                ? "Mark Payment Pending"
+                : "Mark Payment Received"}
+            </button>
+
+            <button
+              disabled={
+                session.status !== "Done" ||
+                !session.paymentReceived
+              }
+              onClick={() =>
+                updateShareReceived(
+                  session._id,
+                  !session.didIReceiveMyShare
+                )
+              }
+            >
+              {session.didIReceiveMyShare
+                ? "Mark Share Not Received"
+                : "Mark Share Received"}
             </button>
 
             <button

@@ -46,6 +46,40 @@ const sessionSchema = new mongoose.Schema(
       default: "Pending",
     },
 
+    sessionStage: {
+      type: String,
+      enum: ["Session Pending", "Session Done", "Session Cancelled", "Session Refunded"],
+      default: "Session Pending",
+    },
+
+    sessionPayment: {
+      type: Number,
+      default: 0,
+      min: 0,
+    },
+
+    myShareAmount: {
+      type: Number,
+      default: 0,
+      min: 0,
+    },
+
+    paymentStatus: {
+      type: String,
+      enum: ["No Payment", "Payment Pending", "Payment Received"],
+      default: "No Payment",
+    },
+
+    paymentReceived: {
+      type: Boolean,
+      default: false,
+    },
+
+    didIReceiveMyShare: {
+      type: Boolean,
+      default: false,
+    },
+
     notes: {
       type: String,
       trim: true,

@@ -13,6 +13,8 @@ function AddSession() {
   const [sessionType, setSessionType] = useState("Online");
   const [charges, setCharges] = useState("");
   const [status, setStatus] = useState("Pending");
+  const [paymentReceived, setPaymentReceived] = useState(false);
+  const [didIReceiveMyShare, setDidIReceiveMyShare] = useState(false);
   const [notes, setNotes] = useState("");
 
   useEffect(() => {
@@ -40,6 +42,8 @@ function AddSession() {
         sessionType,
         charges,
         status,
+        paymentReceived,
+        didIReceiveMyShare,
         notes,
       });
 
@@ -117,6 +121,57 @@ function AddSession() {
           value={charges}
           onChange={(e) => setCharges(e.target.value)}
         />
+
+        <br />
+
+        <select
+          value={status}
+          onChange={(e) => {
+            setStatus(e.target.value);
+
+            if (e.target.value !== "Done") {
+              setPaymentReceived(false);
+              setDidIReceiveMyShare(false);
+            }
+          }}
+        >
+          <option value="Pending">Pending</option>
+          <option value="Done">Done</option>
+          <option value="Cancelled">Cancelled</option>
+          <option value="Refunded">Refunded</option>
+        </select>
+
+        <br />
+
+        <label>
+          <input
+            type="checkbox"
+            checked={paymentReceived}
+            disabled={status !== "Done"}
+            onChange={(e) => {
+              setPaymentReceived(e.target.checked);
+
+              if (!e.target.checked) {
+                setDidIReceiveMyShare(false);
+              }
+            }}
+          />
+          Payment received
+        </label>
+
+        <br />
+
+        <label>
+          <input
+            type="checkbox"
+            checked={didIReceiveMyShare}
+            disabled={status !== "Done" || !paymentReceived}
+            onChange={(e) =>
+              setDidIReceiveMyShare(e.target.checked)
+            }
+          />
+          Did I receive my share?
+        </label>
 
         <br />
 

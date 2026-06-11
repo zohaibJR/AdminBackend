@@ -21,6 +21,7 @@ import EditTherapist from "./pages/EditTherapist";
 import AddSession from "./pages/AddSession";
 import DisplaySessions from "./pages/DisplaySessions";
 import EditSession from "./pages/EditSession";
+import Dashboard from "./pages/Dashboard";
 
 
 import "./App.css";
@@ -48,6 +49,7 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<HomePage />} />
+        <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/addclient" element={<AddClient />} />
         <Route path="/clients" element={<DisplayClients />} />
         <Route path="/editclient/:id" element={<EditClient />} />
