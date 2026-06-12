@@ -126,3 +126,31 @@ export const deleteSession = async (req, res) => {
     res.status(500).json({ success: false, message: error.message });
   }
 };
+
+//Getting Today's Session
+export const getTodaysSessionsCount = async (req, res) => {
+  try {
+    const startOfDay = new Date();
+    startOfDay.setHours(0, 0, 0, 0);
+
+    const endOfDay = new Date();
+    endOfDay.setHours(23, 59, 59, 999);
+
+    const count = await Session.countDocuments({
+      sessionDate: {
+        $gte: startOfDay,
+        $lte: endOfDay,
+      },
+    });
+
+    res.status(200).json({
+      success: true,
+      todaysSessions: count,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};

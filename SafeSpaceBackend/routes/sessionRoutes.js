@@ -6,10 +6,15 @@ import {
   getSessionById,
   updateSession,
   deleteSession,
+  getTodaysSessionsCount,
 } from "../controller/sessionController.js";
 
 const router = express.Router();
 
+// Dashboard Routes
+router.get("/today/count", getTodaysSessionsCount);
+
+// Session CRUD Routes
 router
   .route("/")
   .post(createSession)
