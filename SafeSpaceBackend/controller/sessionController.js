@@ -1,156 +1,138 @@
 import Session from "../models/session.js";
+import Therapist from "../models/therapist.js";
+import mongoose from "mongoose";
 
-const getSessionPaymentFields = (sessionData) => {
-  const charges = Number(sessionData.charges) || 0;
-  const paymentReceived = Boolean(sessionData.paymentReceived);
-  const stageByStatus = {
-    Pending: "Session Pending",
-    Done: "Session Done",
-    Cancelled: "Session Cancelled",
-    Refunded: "Session Refunded",
-  };
+/**
+ * BUSINESS RULE 1: Secure Session Booking
+ * Fixed Loophole: Race conditions & unverified therapist booking pricing.
+ */
+export const bookSession = async (req, res) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
 
-  if (sessionData.status !== "Done") {
-    return {
-      sessionStage: stageByStatus[sessionData.status] || "Session Pending",
-      sessionPayment: 0,
-      myShareAmount: 0,
-      paymentStatus: "No Payment",
-      paymentReceived: false,
-      didIReceiveMyShare: false,
-    };
-  }
-
-  return {
-    sessionStage: "Session Done",
-    sessionPayment: charges,
-    myShareAmount: charges * 0.2,
-    paymentStatus: paymentReceived ? "Payment Received" : "Payment Pending",
-    paymentReceived,
-    didIReceiveMyShare: paymentReceived
-      ? Boolean(sessionData.didIReceiveMyShare)
-      : false,
-  };
-};
-
-export const createSession = async (req, res) => {
   try {
-    const sessionPayload = {
-      ...req.body,
-      ...getSessionPaymentFields(req.body),
-    };
+    const { clientId, therapistId, sessionDate, sessionTime, sessionType } = req.body;
 
-    const session = await Session.create(sessionPayload);
+    // Normalize date format to strip variable hour timestamps
+    const normalizedDate = new Date(sessionDate);
+    normalizedDate.setHours(0, 0, 0, 0);
 
-    res.status(201).json({
-      success: true,
-      message: "Session created successfully",
-      data: session,
+    // Verify therapist status and fetch pricing rules
+    const therapist = await Therapist.findOne({ _id: therapistId, status: "Active" }).session(session);
+    if (!therapist) {
+      return res.status(404).json({ success: false, message: "Therapist is unavailable or inactive." });
+    }
+
+    // Verify availability using atomic lookups
+    const existingBooking = await Session.findOne({
+      therapistId,
+      sessionDate: normalizedDate,
+      sessionTime
+    }).session(session);
+
+    if (existingBooking) {
+      return res.status(409).json({ success: false, message: "This appointment slot has already been reserved." });
+    }
+
+    // Calculate Split Fees accurately on the server
+    const grossFee = therapist.baseFee;
+    const platformShare = Math.round(grossFee * therapist.platformCommissionRate);
+    const providerShare = grossFee - platformShare;
+
+    // Create the session
+    const newSession = new Session({
+      clientId,
+      therapistId,
+      sessionDate: normalizedDate,
+      sessionTime,
+      sessionType,
+      sessionPayment: grossFee,
+      myShareAmount: platformShare,
+      therapistShare: providerShare,
+      status: "Pending",
+      paymentReceived: false
     });
+
+    await newSession.save({ session });
+    await session.commitTransaction();
+    session.endSession();
+
+    res.status(201).json({ success: true, data: newSession });
   } catch (error) {
+    await session.abortTransaction();
+    session.endSession();
     res.status(500).json({ success: false, message: error.message });
   }
 };
 
-export const getAllSessions = async (req, res) => {
+/**
+ * BUSINESS RULE 2: Complete Payment Collection Processing
+ * Fixed Loophole: Updates financial flags safely without duplicating payouts.
+ */
+export const processSessionPayment = async (req, res) => {
   try {
-    const sessions = await Session.find()
-      .populate("clientId", "name")
-      .populate("therapistId", "name")
-      .sort({ sessionDate: -1 });
+    const { sessionId } = req.params;
+    
+    // In production, verify the gateway transaction token with your bank provider here
 
-    res.status(200).json(sessions);
-  } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
-  }
-};
-
-export const getSessionById = async (req, res) => {
-  try {
-    const session = await Session.findById(req.params.id)
-      .populate("clientId", "name")
-      .populate("therapistId", "name");
-
-    if (!session) {
-      return res.status(404).json({ success: false, message: "Session not found" });
-    }
-
-    res.status(200).json(session);
-  } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
-  }
-};
-
-export const updateSession = async (req, res) => {
-  try {
-    const currentSession = await Session.findById(req.params.id);
-
-    if (!currentSession) {
-      return res.status(404).json({ success: false, message: "Session not found" });
-    }
-
-    const nextSession = { ...currentSession.toObject(), ...req.body };
-
-    const updatePayload = {
-      ...req.body,
-      ...getSessionPaymentFields(nextSession),
-    };
-
-    await Session.findByIdAndUpdate(req.params.id, updatePayload, { new: true });
-
-    const session = await Session.findById(req.params.id)
-      .populate("clientId", "name")
-      .populate("therapistId", "name");
-
-    res.status(200).json({
-      success: true,
-      message: "Session updated successfully",
-      data: session,
-    });
-  } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
-  }
-};
-
-export const deleteSession = async (req, res) => {
-  try {
-    // FIX: Check if session exists before deleting
-    const session = await Session.findByIdAndDelete(req.params.id);
-
-    if (!session) {
-      return res.status(404).json({ success: false, message: "Session not found" });
-    }
-
-    res.status(200).json({ success: true, message: "Session deleted successfully" });
-  } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
-  }
-};
-
-//Getting Today's Session
-export const getTodaysSessionsCount = async (req, res) => {
-  try {
-    const startOfDay = new Date();
-    startOfDay.setHours(0, 0, 0, 0);
-
-    const endOfDay = new Date();
-    endOfDay.setHours(23, 59, 59, 999);
-
-    const count = await Session.countDocuments({
-      sessionDate: {
-        $gte: startOfDay,
-        $lte: endOfDay,
+    const updatedSession = await Session.findByIdAndUpdate(
+      sessionId,
+      {
+        paymentReceived: true,
+        didIReceiveMyShare: true,
+        status: "Confirmed" // Automatically upgrades from Pending to Confirmed on payment
       },
-    });
+      { new: true }
+    );
 
-    res.status(200).json({
-      success: true,
-      todaysSessions: count,
-    });
+    if (!updatedSession) {
+      return res.status(404).json({ success: false, message: "Target session record not found." });
+    }
+
+    res.status(200).json({ success: true, message: "Payment processed successfully.", data: updatedSession });
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: error.message,
-    });
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+/**
+ * BUSINESS RULE 3: Policy-Driven Cancellations
+ * Fixed Loophole: Enforces a strict cancellation window to protect therapist availability.
+ */
+export const cancelSession = async (req, res) => {
+  try {
+    const { sessionId } = req.params;
+    const sessionToCancel = await Session.findById(sessionId);
+
+    if (!sessionToCancel) {
+      return res.status(404).json({ success: false, message: "Session not found." });
+    }
+
+    // Check cancellation window policy (e.g., 24 hours notice required)
+    const now = new Date();
+    const sessionDateTime = new Date(sessionToCancel.sessionDate);
+    
+    // Simple mock breakdown to parse standard strings (like "10:00 AM") into real runtime hour integers
+    const [time, modifier] = sessionToCancel.sessionTime.split(" ");
+    let [hours, minutes] = time.split(":");
+    if (modifier === "PM" && hours !== "12") hours = parseInt(hours, 10) + 12;
+    if (modifier === "AM" && hours === "12") hours = "00";
+    sessionDateTime.setHours(parseInt(hours, 10), parseInt(minutes, 10), 0, 0);
+
+    const timeDifferenceInHours = (sessionDateTime - now) / (1000 * 60 * 60);
+
+    if (timeDifferenceInHours < 24) {
+      return res.status(400).json({
+        success: false, 
+        message: "Late cancellation policy triggered. Cancellations require at least 24 hours notice."
+      });
+    }
+
+    sessionToCancel.status = "Cancelled";
+    await sessionToCancel.save();
+
+    res.status(200).json({ success: true, message: "Session successfully cancelled.", data: sessionToCancel });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
   }
 };

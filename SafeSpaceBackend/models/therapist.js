@@ -1,37 +1,12 @@
 import mongoose from "mongoose";
 
-const therapistSchema = new mongoose.Schema(
-    {
-        name: {
-  type: String,
-  required: [true, "Therapist name is required"],
-  trim: true,
-},
+const therapistSchema = new mongoose.Schema({
+  name: { type: String, required: true, trim: true },
+  email: { type: String, required: true, unique: true, lowercase: true },
+  specialization: [String],
+  baseFee: { type: Number, required: true, min: 0 }, // Fee charged per session
+  platformCommissionRate: { type: Number, default: 0.20 }, // 20% SafeSpace cut
+  status: { type: String, enum: ["Active", "OnLeave", "Suspended"], default: "Active" }
+}, { timestamps: true });
 
-specialization: {
-  type: String,
-  required: [true, "Specialization is required"],
-  trim: true,
-},
-
-phone: {
-  type: String,
-  required: [true, "Phone number is required"],
-  trim: true,
-},
-
-email: {
-  type: String,
-  required: [true, "Email is required"],
-  trim: true,
-  lowercase: true,
-},
-    },
-    {
-        timestamps: true,
-    }
-);
-
-const Therapist = mongoose.model("Therapist", therapistSchema);
-
-export default Therapist;
+export default mongoose.model("Therapist", therapistSchema);

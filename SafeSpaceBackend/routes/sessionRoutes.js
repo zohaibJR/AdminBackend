@@ -1,29 +1,11 @@
 import express from "express";
-
-import {
-  createSession,
-  getAllSessions,
-  getSessionById,
-  updateSession,
-  deleteSession,
-  getTodaysSessionsCount,
-} from "../controller/sessionController.js";
+import { bookSession, processSessionPayment, cancelSession } from "../controllers/sessionController.js";
 
 const router = express.Router();
 
-// Dashboard Routes
-router.get("/today/count", getTodaysSessionsCount);
-
-// Session CRUD Routes
-router
-  .route("/")
-  .post(createSession)
-  .get(getAllSessions);
-
-router
-  .route("/:id")
-  .get(getSessionById)
-  .put(updateSession)
-  .delete(deleteSession);
+// Base Transactional Endpoint Declarations
+router.post("/book", bookSession);
+router.patch("/:sessionId/pay", processSessionPayment);
+router.patch("/:sessionId/cancel", cancelSession);
 
 export default router;
