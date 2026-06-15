@@ -18,18 +18,22 @@ export const getDashboardStats = async (req, res) => {
     const startOfWeek = new Date();
     startOfWeek.setDate(startOfWeek.getDate() - 7);
 
+    const inactiveDate = new Date();
+    inactiveDate.setDate(inactiveDate.getDate() - 30);
+
     const [
       totalClients,
       totalTherapists,
       totalSessions,
-
       revenueResult,
       shareResult,
-
       todaySessions,
       upcomingSessions,
       cancelledThisWeek,
       pendingPayments,
+      recentClients,
+      mostActiveClientResult,
+      todaysSessionsList,
     ] = await Promise.all([
       Client.countDocuments(),
 
@@ -47,9 +51,7 @@ export const getDashboardStats = async (req, res) => {
         {
           $group: {
             _id: null,
-            totalRevenue: {
-              $sum: "$sessionPayment",
-            },
+            totalRevenue: { $sum: "$sessionPayment" },
           },
         },
       ]),
@@ -64,9 +66,7 @@ export const getDashboardStats = async (req, res) => {
         {
           $group: {
             _id: null,
-            totalMyShare: {
-              $sum: "$myShareAmount",
-            },
+            totalMyShare: { $sum: "$myShareAmount" },
           },
         },
       ]),
@@ -96,23 +96,93 @@ export const getDashboardStats = async (req, res) => {
       Session.countDocuments({
         paymentStatus: "Payment Pending",
       }),
+
+      Client.find()
+        .sort({ createdAt: -1 })
+        .limit(5)
+        .select("name"),
+
+      Session.aggregate([
+        {
+          $group: {
+            _id: "$clientId",
+            totalSessions: { $sum: 1 },
+          },
+        },
+        {
+          $sort: {
+            totalSessions: -1,
+          },
+        },
+        {
+          $limit: 1,
+        },
+        {
+          $lookup: {
+            from: "clients",
+            localField: "_id",
+            foreignField: "_id",
+            as: "client",
+          },
+        },
+        {
+          $unwind: "$client",
+        },
+      ]),
+
+      Session.find({
+        sessionDate: {
+          $gte: startOfToday,
+          $lte: endOfToday,
+        },
+      })
+        .populate("clientId", "name")
+        .sort({ sessionTime: 1 }),
     ]);
+
+    const activeClientIds = await Session.distinct("clientId", {
+      sessionDate: {
+        $gte: inactiveDate,
+      },
+    });
+
+    const inactiveClients = await Client.find({
+      _id: {
+        $nin: activeClientIds,
+      },
+    }).select("name");
 
     res.status(200).json({
       totalClients,
       totalTherapists,
       totalSessions,
 
-      totalRevenue:
-        revenueResult[0]?.totalRevenue || 0,
+      totalRevenue: revenueResult[0]?.totalRevenue || 0,
 
-      totalMyShare:
-        shareResult[0]?.totalMyShare || 0,
+      totalMyShare: shareResult[0]?.totalMyShare || 0,
 
       todaySessions,
       upcomingSessions,
       cancelledThisWeek,
       pendingPayments,
+
+      recentClients,
+
+      mostActiveClient:
+        mostActiveClientResult.length > 0
+          ? {
+              name: mostActiveClientResult[0].client.name,
+              sessions: mostActiveClientResult[0].totalSessions,
+            }
+          : null,
+
+      todaysSessionsList: todaysSessionsList.map((session) => ({
+        id: session._id,
+        time: session.sessionTime,
+        clientName: session.clientId?.name || "Unknown Client",
+      })),
+
+      inactiveClients,
     });
   } catch (error) {
     res.status(500).json({
