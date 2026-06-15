@@ -24,61 +24,187 @@ function fmt(n) {
 
 export default function Dashboard() {
   const navigate = useNavigate();
+
   const [stats, setStats] = useState({
     totalClients: 0,
     totalTherapists: 0,
     totalSessions: 0,
     totalRevenue: 0,
     totalMyShare: 0,
+
+    todaySessions: 0,
+    upcomingSessions: 0,
+    cancelledThisWeek: 0,
+    pendingPayments: 0,
   });
+
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     axios
       .get(`${API}/dashboard`)
-      .then((res) => { setStats(res.data); setLoading(false); })
-      .catch(() => setLoading(false));
+      .then((res) => {
+        setStats(res.data);
+        setLoading(false);
+      })
+      .catch(() => {
+        setLoading(false);
+      });
   }, []);
 
   return (
     <AdminLayout title="Dashboard">
       <div className="page-header">
         <div className="page-header__text">
-          <h2 className="page-header__title">Welcome back 👋</h2>
-          <p className="page-header__sub">Here's what's happening at SafeSpace today.</p>
+          <h2 className="page-header__title">
+            Welcome back 👋
+          </h2>
+
+          <p className="page-header__sub">
+            Here's what's happening at SafeSpace today.
+          </p>
         </div>
       </div>
 
       {loading ? (
-        <div style={{ textAlign: "center", color: "var(--text-muted)", padding: 48 }}>
-          Loading stats…
+        <div
+          style={{
+            textAlign: "center",
+            color: "var(--text-muted)",
+            padding: 48,
+          }}
+        >
+          Loading stats...
         </div>
       ) : (
         <>
+          {/* Main Statistics */}
+
           <div className="stats-grid">
-            <StatCard icon="👤" value={stats.totalClients}    label="Total Clients"    variant="teal"  />
-            <StatCard icon="🧠" value={stats.totalTherapists} label="Therapists"       variant="mint"  />
-            <StatCard icon="📅" value={stats.totalSessions}   label="Total Sessions"   variant="blue"  />
-            <StatCard icon="💰" value={`Rs ${fmt(stats.totalRevenue)}`}  label="Revenue Collected"  variant="amber" />
-            <StatCard icon="🏦" value={`Rs ${fmt(stats.totalMyShare)}`}  label="My Share Received"  variant="green" />
+            <StatCard
+              icon="👤"
+              value={stats.totalClients}
+              label="Total Clients"
+              variant="teal"
+            />
+
+            <StatCard
+              icon="🧠"
+              value={stats.totalTherapists}
+              label="Therapists"
+              variant="mint"
+            />
+
+            <StatCard
+              icon="📅"
+              value={stats.totalSessions}
+              label="Total Sessions"
+              variant="blue"
+            />
+
+            <StatCard
+              icon="💰"
+              value={`Rs ${fmt(stats.totalRevenue)}`}
+              label="Revenue Collected"
+              variant="amber"
+            />
+
+            <StatCard
+              icon="🏦"
+              value={`Rs ${fmt(stats.totalMyShare)}`}
+              label="My Share Received"
+              variant="green"
+            />
+          </div>
+
+          {/* Real-Time Insights */}
+
+          <div
+            style={{
+              marginTop: "32px",
+            }}
+          >
+            <h3
+              style={{
+                marginBottom: "16px",
+              }}
+            >
+              Real-Time Insights
+            </h3>
+
+            <div className="stats-grid">
+              <StatCard
+                icon="📈"
+                value={stats.todaySessions}
+                label="Today's Sessions"
+                variant="blue"
+              />
+
+              <StatCard
+                icon="⏰"
+                value={stats.upcomingSessions}
+                label="Upcoming (24h)"
+                variant="teal"
+              />
+
+              <StatCard
+                icon="❌"
+                value={stats.cancelledThisWeek}
+                label="Cancelled This Week"
+                variant="amber"
+              />
+
+              <StatCard
+                icon="💳"
+                value={stats.pendingPayments}
+                label="Pending Payments"
+                variant="green"
+              />
+            </div>
           </div>
 
           {/* Quick Actions */}
+
           <div className="card">
             <div className="card__header">
-              <span className="card__title">Quick Actions</span>
+              <span className="card__title">
+                Quick Actions
+              </span>
             </div>
-            <div className="card__body" style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
-              <button className="btn btn--primary" onClick={() => navigate("/addclient")}>
+
+            <div
+              className="card__body"
+              style={{
+                display: "flex",
+                gap: 12,
+                flexWrap: "wrap",
+              }}
+            >
+              <button
+                className="btn btn--primary"
+                onClick={() => navigate("/addclient")}
+              >
                 + Add Client
               </button>
-              <button className="btn btn--ghost" onClick={() => navigate("/addtherapist")}>
+
+              <button
+                className="btn btn--ghost"
+                onClick={() => navigate("/addtherapist")}
+              >
                 + Add Therapist
               </button>
-              <button className="btn btn--ghost" onClick={() => navigate("/addsession")}>
+
+              <button
+                className="btn btn--ghost"
+                onClick={() => navigate("/addsession")}
+              >
                 + Add Session
               </button>
-              <button className="btn btn--ghost" onClick={() => navigate("/sessions")}>
+
+              <button
+                className="btn btn--ghost"
+                onClick={() => navigate("/sessions")}
+              >
                 View All Sessions
               </button>
             </div>
