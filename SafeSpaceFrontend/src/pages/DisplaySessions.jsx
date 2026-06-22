@@ -25,6 +25,30 @@ function PayBadge({ status }) {
   return <span className="badge badge--nopay">No Payment</span>;
 }
 
+function getRowStyle(s) {
+  if (s.status !== "Done") return { borderLeft: "3px solid transparent" };
+
+  // Stage 3 — Done + Paid + Share Received → Green
+  if (s.paymentReceived && s.didIReceiveMyShare) {
+    return {
+      background: "rgba(74, 222, 128, 0.08)",
+      borderLeft: "3px solid rgba(74, 222, 128, 0.55)",
+    };
+  }
+  // Stage 2 — Done + Paid (share still pending) → Yellow
+  if (s.paymentReceived && !s.didIReceiveMyShare) {
+    return {
+      background: "rgba(250, 204, 21, 0.08)",
+      borderLeft: "3px solid rgba(250, 204, 21, 0.55)",
+    };
+  }
+  // Stage 1 — Done but not paid → Red
+  return {
+    background: "rgba(248, 113, 113, 0.08)",
+    borderLeft: "3px solid rgba(248, 113, 113, 0.55)",
+  };
+}
+
 export default function DisplaySessions() {
   const [sessions, setSessions] = useState([]);
   const [loading, setLoading]   = useState(true);
@@ -106,7 +130,7 @@ export default function DisplaySessions() {
               </thead>
               <tbody>
                 {sessions.map((s) => (
-                  <tr key={s._id}>
+                  <tr key={s._id} style={getRowStyle(s)}>
                     <td style={{ fontWeight: 600, color: "var(--text-secondary)" }}>
                       #{s.sessionNo}
                     </td>

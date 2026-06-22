@@ -62,7 +62,7 @@ export default function Dashboard() {
       <div className="page-header">
         <div className="page-header__text">
           <h2 className="page-header__title">
-            Welcome back 👋
+            Welcome back, Muteeba 🐪 👋
           </h2>
 
           <p className="page-header__sub">
@@ -235,6 +235,8 @@ export default function Dashboard() {
               </div>
             </div>
           </div>
+
+          <br />
 
           {/* Quick Actions */}
 

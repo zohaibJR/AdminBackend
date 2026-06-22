@@ -1,26 +1,36 @@
 import React, { useState } from "react";
-import { NavLink, useLocation } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import "../styles/admin.css";
 
 const NAV = [
   {
     section: "Overview",
-    links: [
-      { to: "/dashboard", icon: "📊", label: "Dashboard" },
-    ],
+    links: [{ to: "/dashboard", icon: "📊", label: "Dashboard" }],
   },
   {
     section: "Manage",
     links: [
-      { to: "/clients",    icon: "👤", label: "Clients" },
+      { to: "/clients", icon: "👤", label: "Clients" },
       { to: "/therapists", icon: "🧠", label: "Therapists" },
-      { to: "/sessions",   icon: "📅", label: "Sessions" },
+      { to: "/sessions", icon: "📅", label: "Sessions" },
     ],
   },
 ];
 
 export default function AdminLayout({ children, title }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    const confirmLogout = window.confirm(
+      "Are you sure you want to logout?"
+    );
+
+    if (confirmLogout) {
+      localStorage.removeItem("token");
+      navigate("/login");
+    }
+  };
 
   return (
     <div className="admin-shell">
@@ -28,8 +38,11 @@ export default function AdminLayout({ children, title }) {
       {sidebarOpen && (
         <div
           style={{
-            position: "fixed", inset: 0, background: "rgba(0,0,0,.45)",
-            zIndex: 99, display: "none",
+            position: "fixed",
+            inset: 0,
+            background: "rgba(0,0,0,.45)",
+            zIndex: 99,
+            display: "none",
           }}
           className="sidebar-overlay"
           onClick={() => setSidebarOpen(false)}
@@ -51,7 +64,10 @@ export default function AdminLayout({ children, title }) {
         <nav className="sidebar__nav">
           {NAV.map((group) => (
             <div key={group.section}>
-              <span className="sidebar__section-label">{group.section}</span>
+              <span className="sidebar__section-label">
+                {group.section}
+              </span>
+
               {group.links.map((link) => (
                 <NavLink
                   key={link.to}
@@ -61,7 +77,9 @@ export default function AdminLayout({ children, title }) {
                   }
                   onClick={() => setSidebarOpen(false)}
                 >
-                  <span className="sidebar__link-icon">{link.icon}</span>
+                  <span className="sidebar__link-icon">
+                    {link.icon}
+                  </span>
                   {link.label}
                 </NavLink>
               ))}
@@ -69,12 +87,22 @@ export default function AdminLayout({ children, title }) {
           ))}
         </nav>
 
+        {/* Footer + Logout */}
         <div className="sidebar__footer">
-          SafeSpace © 2025
+          <button
+            onClick={handleLogout}
+            className="logout-btn"
+          >
+            🚪 Logout
+          </button>
+
+          <div style={{ marginTop: "15px" }}>
+            SafeSpace © 2025
+          </div>
         </div>
       </aside>
 
-      {/* Main */}
+      {/* Main Content */}
       <div className="admin-main">
         <header className="topbar">
           <button
@@ -86,13 +114,17 @@ export default function AdminLayout({ children, title }) {
           >
             ☰
           </button>
+
           <h1 className="topbar__title">{title}</h1>
+
           <div className="topbar__right">
             <span className="topbar__badge">Admin</span>
           </div>
         </header>
 
-        <main className="page-content">{children}</main>
+        <main className="page-content">
+          {children}
+        </main>
       </div>
     </div>
   );

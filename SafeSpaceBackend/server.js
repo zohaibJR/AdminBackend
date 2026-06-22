@@ -7,6 +7,7 @@ import clientRoutes from "./routes/clientRoutes.js";
 import therapistRoutes from "./routes/therapistRoutes.js"
 import sessionRoutes from "./routes/sessionRoutes.js";
 import dashboardRoutes from "./routes/dashboardRoutes.js";
+import adminRoutes from "./routes/adminRoutes.js";
 
 dotenv.config();
 
@@ -29,6 +30,7 @@ app.use("/api/clients", clientRoutes);
 app.use("/api/therapists", therapistRoutes);
 app.use("/api/sessions", sessionRoutes);
 app.use("/api/dashboard", dashboardRoutes);
+app.use("/api/admin", adminRoutes);
 
 const PORT = process.env.PORT || 5000;
 
