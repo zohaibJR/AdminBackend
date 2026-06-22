@@ -80,7 +80,7 @@ export const updateClient = async (req, res) => {
         note,
       },
       {
-        new: true,
+        returnDocument: 'after',
         runValidators: true,
       }
     );

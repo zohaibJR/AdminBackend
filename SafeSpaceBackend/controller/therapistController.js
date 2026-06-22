@@ -73,7 +73,10 @@ export const updateTherapist = async (req, res) => {
     const therapist = await Therapist.findByIdAndUpdate(
       req.params.id,
       { name, specialization, phone, email },
-      { new: true, runValidators: true }
+      {
+  returnDocument: 'after',
+  runValidators: true,
+}
     );
 
     if (!therapist) {

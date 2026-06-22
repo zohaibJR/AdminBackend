@@ -35,6 +35,22 @@ export default function AddSession() {
     axios.get(`${API}/therapists`).then((r) => setTherapists(r.data)).catch(console.error);
   }, []);
 
+  useEffect(() => {
+  if (!form.clientId) return;
+
+  axios
+    .get(
+      `${API}/sessions/next-session-number/${form.clientId}`
+    )
+    .then((res) => {
+      setForm((prev) => ({
+        ...prev,
+        sessionNo: res.data.nextSessionNo,
+      }));
+    })
+    .catch(console.error);
+}, [form.clientId]);
+
   const handleStatusChange = (e) => {
     const val = e.target.value;
     setForm((f) => ({
@@ -126,10 +142,8 @@ export default function AddSession() {
                   <input
                     className="form-input"
                     type="number"
-                    min="1"
-                    placeholder="1"
                     value={form.sessionNo}
-                    onChange={set("sessionNo")}
+                    readOnly
                     required
                   />
                 </div>

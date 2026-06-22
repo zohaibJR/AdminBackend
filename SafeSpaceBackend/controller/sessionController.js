@@ -35,8 +35,17 @@ const getSessionPaymentFields = (sessionData) => {
 
 export const createSession = async (req, res) => {
   try {
+    const lastSession = await Session.findOne({
+      clientId: req.body.clientId,
+    }).sort({ sessionNo: -1 });
+
+    const nextSessionNo = lastSession
+      ? lastSession.sessionNo + 1
+      : 1;
+
     const sessionPayload = {
       ...req.body,
+      sessionNo: nextSessionNo,
       ...getSessionPaymentFields(req.body),
     };
 
@@ -48,7 +57,10 @@ export const createSession = async (req, res) => {
       data: session,
     });
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
   }
 };
 
@@ -96,7 +108,11 @@ export const updateSession = async (req, res) => {
       ...getSessionPaymentFields(nextSession),
     };
 
-    await Session.findByIdAndUpdate(req.params.id, updatePayload, { new: true });
+    await Session.findByIdAndUpdate(
+  req.params.id,
+  updatePayload,
+  { returnDocument: 'after' }
+);
 
     const session = await Session.findById(req.params.id)
       .populate("clientId", "name")
@@ -124,5 +140,29 @@ export const deleteSession = async (req, res) => {
     res.status(200).json({ success: true, message: "Session deleted successfully" });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+export const getNextSessionNumber = async (req, res) => {
+  try {
+    const { clientId } = req.params;
+
+    const lastSession = await Session.findOne({
+      clientId,
+    }).sort({ sessionNo: -1 });
+
+    const nextSessionNo = lastSession
+      ? lastSession.sessionNo + 1
+      : 1;
+
+    res.status(200).json({
+      success: true,
+      nextSessionNo,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
   }
 };
